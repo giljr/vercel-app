@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 4000
 
 
 // setup static folder
-// app.use(express.static(path.join(__dirname,'public')))
+app.use(express.static(path.join(__dirname,'public')))
 
 let posts = [
   {id:1, title:'Post One'},
