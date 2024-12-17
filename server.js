@@ -1,42 +1,56 @@
-const express = require('express')
-const path = require('path')
-const app = express()
+import express from 'express'
+// const express = require('express')
+import path from 'path'
+//const path = require('path')
+import {fileURLToPath} from 'url'
+import posts from './routes/posts.js'
+// const posts = require('./routes/posts')
+import logger from './middleware/logger.js'
+import errHandler from './middleware/error.js'
+import notFound from './middleware/notFound.js'
+import dotenv from 'dotenv'
+// require('dotenv').config()
 
-require('dotenv').config()
 const PORT = process.env.PORT || 4000
 
+// Get the Directory name
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const app = express()
+
+// Body parser middleware 
+// (support raw and x-www-form-urlencoded)
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+// Middleware: Logger
+app.use(logger)
 
 // setup static folder
 app.use(express.static(path.join(__dirname,'public')))
 
-let posts = [
-  {id:1, title:'Post One'},
-  {id:2, title:'Post Two'},
-  {id:3, title:'Post Three'}
-]
+// Routes
+app.use('/api/posts', posts)
 
-// Get all posts
-app.get('/api/posts', (req, res) => {
-  const limit = parseInt(req.query.limit)
-  if (!isNaN(limit) && limit > 0) {
-    return res.status(200).json(posts.slice(0, limit))
-  }
-  res.status(200).json(posts)  
-})
+// Error handling middleware
+app.use(notFound)
+app.use(errHandler)
 
-// Get single post
-app.get('/api/posts/:id', (req, res) => {
-  const id = parseInt(req.params.id)
-  const post = posts.find((post)=> post.id === id)
-  
-  if (!post) {
-    return res.status(404).json({msg: `A post with the id of ${id} was not found`})
-  }
-  res.status(200).json(post)
-})
+// Error handling middleware
+// app.use(notFound)
+
+// // Catch all other routes and return 404
+// app.use((req, res, next) => {
+//   const error = new Error('Not Found')
+//   error.status = 404
+//   next(error)
+// })
+
+
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`)
 })
 
-module.exports = app
+export default app
+// module.exports = app
