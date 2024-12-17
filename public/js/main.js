@@ -5,7 +5,7 @@ const form = document.querySelector('#add-post-form');
 // Get and show posts
 async function showPosts() {
   try {
-    const res = await fetch('https:/vercel-app-seven-alpha.vercel.app/api/posts');
+    const res = await fetch('/api/posts');
     if (!res.ok) {
       throw new Error('Failed to fetch posts');
     }
@@ -30,7 +30,7 @@ async function addPost(e) {
   const title = formData.get('title');
 
   try {
-    const res = await fetch('https:/vercel-app-seven-alpha.vercel.app/api/posts', {
+    const res = await fetch('/api/posts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
